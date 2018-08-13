@@ -17,7 +17,8 @@ class User extends Component {
                     placeholder:'Enter your name...'
                 },
                 validation:{
-                    required: true
+                    required: true,
+                    minLen: 5
                 },
                 valid:false,
                 touched:false,
@@ -34,9 +35,9 @@ class User extends Component {
                     placeholder:'Enter your lastname...'
                 },
                 validation:{
-                    required: false
+                    required: true
                 },
-                valid:true,
+                valid:false,
                 touched:false,
                 validationMessage:''
             },
@@ -51,9 +52,9 @@ class User extends Component {
                     cols: 36
                         },
                 validation:{
-                    required: true
+                    required: false
                 },
-                valid:false,
+                valid:true,
                 touched:false,
                 validationMessage:''
             },
@@ -73,9 +74,9 @@ class User extends Component {
                     ]
                         },
                 validation:{
-                    required: true
+                    required: false
                 },
-                valid:false,
+                valid:true,
                 touched:false,
                 validationMessage:''
             }
@@ -95,12 +96,21 @@ class User extends Component {
         event.preventDefault();
 
         let dataToSubmit = {};
+        let formIsValid = true;
 
         for(let key in this.state.formData){
             dataToSubmit[key] = this.state.formData[key].value;
         }
 
-        console.log(dataToSubmit);
+        for(let key in this.state.formData){
+            formIsValid = formIsValid && this.state.formData[key].valid;
+        }
+
+        if(formIsValid)
+        {
+            console.log(dataToSubmit);
+
+        }
 
     }
 
@@ -111,6 +121,7 @@ class User extends Component {
 
                     <FormFields 
                         formData={this.state.formData}
+                        onblur={(newState) => this.updateForm(newState)}
                         change={(newState) => this.updateForm(newState)}
                     />
 

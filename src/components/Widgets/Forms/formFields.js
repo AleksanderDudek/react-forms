@@ -29,10 +29,25 @@ const FormFields = (props) => {
          : null
    }
 
+   const onBlur = () => {
+
+   }
+
    const validate = (element) => {
         console.log(element);
 
         let error = [true, ''];
+
+
+        ///minLength
+        if(element.validation.minLen)
+        {
+            const valid = element.value.length >= element.validation.minLen;
+            const message = `${ !valid ? 'Has to be at least '+ element.validation.minLen + ' long' : ''}`
+
+            //valid should always be false in 1st example
+            error = !valid ? [valid, message] : error;
+        }
 
         ///check for errors
         if(element.validation.required){
@@ -46,15 +61,21 @@ const FormFields = (props) => {
         return error;
    }
 
-   const changeHandler = (event, id) => {
+   const changeHandler = (event, id, blur) => {
 
     const newState = props.formData;
 
     newState[id].value = event.target.value;
 
-    let validData = validate(newState[id]);
-    newState[id].valid = validData[0];
-    newState[id].validationMessage = validData[1];
+    //validate only if blur = true
+
+    if(blur){
+        let validData = validate(newState[id]);
+        newState[id].valid = validData[0];
+        newState[id].validationMessage = validData[1];
+    }
+    
+    newState[id].touched = true;
 
     console.log(newState);
 
@@ -89,7 +110,10 @@ const FormFields = (props) => {
                         {...values.config}
                         value={values.value}
                         onChange={
-                            (event) => changeHandler(event, data.id)
+                            (event) => changeHandler(event, data.id, false)
+                        }
+                        onBlur={
+                            (event) => changeHandler(event, data.id, true)
                         }
                     />
                     {showValidation(values)}
@@ -109,6 +133,8 @@ const FormFields = (props) => {
                     >
 
                     </textarea>
+                    {showValidation(values)}
+
                 </div>
             )
             break;
@@ -128,6 +154,8 @@ const FormFields = (props) => {
                             <option key={i} value={item.val}> {item.text} </option>
                         ))}
                     </select>
+                    {showValidation(values)}
+
                 </div>
             )
             break;
